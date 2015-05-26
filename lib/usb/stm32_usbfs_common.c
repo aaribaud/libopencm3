@@ -80,7 +80,7 @@ void stm32_usbfs_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 	if (dir || (addr == 0)) {
 		USB_SET_EP_TX_ADDR(addr, dev->pm_top);
 		if (addr != 0) {
-			dev->user_callback_ctr[addr][USB_TRANSACTION_IN] =
+			dev->user_endpoint_callback[addr][USB_TRANSACTION_IN] =
 			    (void *)callback;
 		}
 		USB_CLR_EP_TX_DTOG(addr);
@@ -92,7 +92,7 @@ void stm32_usbfs_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 		USB_SET_EP_RX_ADDR(addr, dev->pm_top);
 		stm32_usbfs_set_ep_rx_bufsize(dev, addr, max_size);
 		if (addr != 0) {
-			dev->user_callback_ctr[addr][USB_TRANSACTION_OUT] =
+			dev->user_endpoint_callback[addr][USB_TRANSACTION_OUT] =
 			    (void *)callback;
 		}
 		USB_CLR_EP_RX_DTOG(addr);
@@ -245,8 +245,8 @@ void stm32_usbfs_poll(usbd_device *dev)
 			ep &= ~USB_EP_TX_CTR;
 		}
 
-		if (dev->user_callback_ctr[addr][type]) {
-			dev->user_callback_ctr[addr][type] (dev, addr);
+		if (dev->user_endpoint_callback[addr][type]) {
+			dev->user_endpoint_callback[addr][type] (dev, addr);
 		}
 
 		/* reset bits that can only be changed by toggle */

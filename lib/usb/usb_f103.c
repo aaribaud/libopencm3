@@ -51,6 +51,7 @@ static usbd_device *stm32f103_usbd_init(void)
 	/* Enable RESET, SUSPEND, RESUME and CTR interrupts. */
 	SET_REG(USB_CNTR_REG, USB_CNTR_RESETM | USB_CNTR_CTRM |
 		USB_CNTR_SUSPM | USB_CNTR_WKUPM);
+
 	return &stm32_usbfs_dev;
 }
 

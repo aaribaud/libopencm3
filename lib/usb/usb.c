@@ -79,11 +79,11 @@ usbd_device *usbd_init(const usbd_driver *driver,
 	usbd_dev->ctrl_buf = control_buffer;
 	usbd_dev->ctrl_buf_len = control_buffer_size;
 
-	usbd_dev->user_callback_ctr[0][USB_TRANSACTION_SETUP] =
+	usbd_dev->user_endpoint_callback[0][USB_TRANSACTION_SETUP] =
 	    _usbd_control_setup;
-	usbd_dev->user_callback_ctr[0][USB_TRANSACTION_OUT] =
+	usbd_dev->user_endpoint_callback[0][USB_TRANSACTION_OUT] =
 	    _usbd_control_out;
-	usbd_dev->user_callback_ctr[0][USB_TRANSACTION_IN] =
+	usbd_dev->user_endpoint_callback[0][USB_TRANSACTION_IN] =
 	    _usbd_control_in;
 
 	usbd_dev->user_callback_set_config = NULL;
@@ -179,7 +179,7 @@ void usbd_ep_callback_set(usbd_device *usbd_dev, uint8_t addr, void (*callback)(
 	enum _usbd_transaction dir = (addr & 0x80) ? USB_TRANSACTION_IN : USB_TRANSACTION_OUT;
 	addr &= 0x7F;
 
-	usbd_dev->user_callback_ctr[addr][dir] = callback;
+	usbd_dev->user_endpoint_callback[addr][dir] = callback;
 }
 
 /**@}*/
