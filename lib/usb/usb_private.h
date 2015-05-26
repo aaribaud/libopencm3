@@ -75,7 +75,7 @@ struct _usbd_device {
 
 	usbd_control_callback user_control_callback;
 
-	usbd_endpoint_callback user_callback_ctr[8][3];
+	usbd_endpoint_callback user_endpoint_callback[8][3];
 
 	/* User callback function for some standard USB function hooks */
 	usbd_set_config_callback user_callback_set_config;
