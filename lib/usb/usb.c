@@ -88,6 +88,7 @@ usbd_device *usbd_init(const usbd_driver *driver,
 
 	usbd_dev->user_callback_set_config = NULL;
 	usbd_dev->user_control_callback = NULL;
+	usbd_dev->user_callback_set_altsetting = NULL;
 
 	return usbd_dev;
 }
