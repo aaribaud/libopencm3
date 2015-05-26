@@ -94,7 +94,7 @@ extern void usbd_register_control_callback(usbd_device *usbd_dev,
 					  usbd_control_callback callback);
 
 /* <usb_standard.c> */
-extern int usbd_register_set_config_callback(usbd_device *usbd_dev,
+extern void usbd_register_set_config_callback(usbd_device *usbd_dev,
 					  usbd_set_config_callback callback);
 
 extern void usbd_register_set_altsetting_callback(usbd_device *usbd_dev,

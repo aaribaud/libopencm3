@@ -39,20 +39,10 @@ LGPL License Terms @ref lgpl_license
 #include <libopencm3/usb/usbd.h>
 #include "usb_private.h"
 
-int usbd_register_set_config_callback(usbd_device *usbd_dev,
+void usbd_register_set_config_callback(usbd_device *usbd_dev,
 				       usbd_set_config_callback callback)
 {
-	int i;
-
-	for (i = 0; i < MAX_USER_SET_CONFIG_CALLBACK; i++) {
-		if (usbd_dev->user_callback_set_config[i])
-			continue;
-
-		usbd_dev->user_callback_set_config[i] = callback;
-		return 0;
-	}
-
-	return -1;
+	usbd_dev->user_callback_set_config = callback;
 }
 
 void usbd_register_set_altsetting_callback(usbd_device *usbd_dev,
@@ -245,8 +235,6 @@ static int usb_standard_set_configuration(usbd_device *usbd_dev,
 					  struct usb_setup_data *req,
 					  uint8_t **buf, uint16_t *len)
 {
-	int i;
-
 	(void)req;
 	(void)buf;
 	(void)len;
@@ -261,19 +249,14 @@ static int usb_standard_set_configuration(usbd_device *usbd_dev,
 	/* Reset all endpoints. */
 	usbd_dev->driver->ep_reset(usbd_dev);
 
-	if (usbd_dev->user_callback_set_config[0]) {
-		/*
-		 * Flush control callbacks. These will be reregistered
-		 * by the user handler.
-		 */
-		usbd_dev->user_control_callback = NULL;
+	/*
+	 * Flush control callbacks. These will be reregistered
+	 * by the user handler.
+	 */
+	usbd_dev->user_control_callback = NULL;
 
-		for (i = 0; i < MAX_USER_SET_CONFIG_CALLBACK; i++) {
-			if (usbd_dev->user_callback_set_config[i]) {
-				usbd_dev->user_callback_set_config[i](usbd_dev,
-								req->wValue);
-			}
-		}
+	if(usbd_dev->user_callback_set_config) {
+		usbd_dev->user_callback_set_config(usbd_dev, req->wValue);
 	}
 
 	return USBD_REQ_HANDLED;
