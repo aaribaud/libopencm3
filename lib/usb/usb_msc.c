@@ -733,7 +733,7 @@ int usb_msc_control_request(usbd_device *usbd_dev,
 }
 
 /** @brief Setup the endpoints to be bulk & register the callbacks. */
-static void msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
+void usb_msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
 {
 	usbd_mass_storage *ms = &_mass_storage;
 
@@ -807,7 +807,7 @@ usbd_mass_storage *usb_msc_init(usbd_device *usbd_dev,
 
 	set_sbc_status_good(&_mass_storage);
 
-	usbd_register_set_config_callback(usbd_dev, msc_set_config);
+	usbd_register_set_config_callback(usbd_dev, usb_msc_set_config);
 
 	return &_mass_storage;
 }

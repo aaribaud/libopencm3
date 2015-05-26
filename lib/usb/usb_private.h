@@ -38,8 +38,6 @@ LGPL License Terms @ref lgpl_license
 #ifndef __USB_PRIVATE_H
 #define __USB_PRIVATE_H
 
-#define MAX_USER_SET_CONFIG_CALLBACK	4
-
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 /** Internal collection of device information. */
@@ -80,7 +78,7 @@ struct _usbd_device {
 	usbd_endpoint_callback user_callback_ctr[8][3];
 
 	/* User callback function for some standard USB function hooks */
-	usbd_set_config_callback user_callback_set_config[MAX_USER_SET_CONFIG_CALLBACK];
+	usbd_set_config_callback user_callback_set_config;
 
 	usbd_set_altsetting_callback user_callback_set_altsetting;
 

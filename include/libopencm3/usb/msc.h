@@ -92,6 +92,8 @@ int usb_msc_control_request(usbd_device *usbd_dev,
 				struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 				usbd_control_complete_callback *complete);
 
+void usb_msc_set_config(usbd_device *usbd_dev, uint16_t wValue);
+
 #endif
 
 /**@}*/
