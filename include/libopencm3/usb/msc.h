@@ -88,6 +88,10 @@ usbd_mass_storage *usb_msc_init(usbd_device *usbd_dev,
 				 int (*read_block)(uint32_t lba, uint8_t *copy_to),
 				 int (*write_block)(uint32_t lba, const uint8_t *copy_from));
 
+int usb_msc_control_request(usbd_device *usbd_dev,
+				struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
+				usbd_control_complete_callback *complete);
+
 #endif
 
 /**@}*/

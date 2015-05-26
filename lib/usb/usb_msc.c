@@ -706,25 +706,30 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 /** @brief Handle various control requests related to the msc storage
  *	   interface.
  */
-static int msc_control_request(usbd_device *usbd_dev,
+int usb_msc_control_request(usbd_device *usbd_dev,
 				struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 				usbd_control_complete_callback *complete)
 {
 	(void)complete;
 	(void)usbd_dev;
 
-	switch (req->bRequest) {
-	case USB_MSC_REQ_BULK_ONLY_RESET:
-		/* Do any special reset code here. */
-		return USBD_REQ_HANDLED;
-	case USB_MSC_REQ_GET_MAX_LUN:
-		/* Return the number of LUNs.  We use 0. */
-		*buf[0] = 0;
-		*len = 1;
-		return USBD_REQ_HANDLED;
-	}
+	const uint8_t mask = USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT;
+	const uint8_t value = USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE;
 
-	return USBD_REQ_NOTSUPP;
+	if((req->bmRequestType & mask) == value) {
+		switch (req->bRequest) {
+		case USB_MSC_REQ_BULK_ONLY_RESET:
+			/* Do any special reset code here. */
+			return USBD_REQ_HANDLED;
+		case USB_MSC_REQ_GET_MAX_LUN:
+			/* Return the number of LUNs.  We use 0. */
+			*buf[0] = 0;
+			*len = 1;
+			return USBD_REQ_HANDLED;
+		}
+ 	}
+
+	return USBD_REQ_NEXT_CALLBACK;
 }
 
 /** @brief Setup the endpoints to be bulk & register the callbacks. */
@@ -739,11 +744,7 @@ static void msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
 	usbd_ep_setup(usbd_dev, ms->ep_out, USB_ENDPOINT_ATTR_BULK,
 		      ms->ep_out_size, msc_data_rx_cb);
 
-	usbd_register_control_callback(
-				usbd_dev,
-				USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE,
-				USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT,
-				msc_control_request);
+	usbd_register_control_callback(usbd_dev, usb_msc_control_request);
 }
 
 /** @addtogroup usb_msc */

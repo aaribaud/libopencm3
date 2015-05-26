@@ -277,9 +277,7 @@ static int usb_standard_set_configuration(usbd_device *usbd_dev,
 		 * Flush control callbacks. These will be reregistered
 		 * by the user handler.
 		 */
-		for (i = 0; i < MAX_USER_CONTROL_CALLBACK; i++) {
-			usbd_dev->user_control_callback[i].cb = NULL;
-		}
+		usbd_dev->user_control_callback = NULL;
 
 		for (i = 0; i < MAX_USER_SET_CONFIG_CALLBACK; i++) {
 			if (usbd_dev->user_callback_set_config[i]) {
