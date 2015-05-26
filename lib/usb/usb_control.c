@@ -51,24 +51,10 @@ static void stall_transaction(usbd_device *usbd_dev)
 }
 
 /* Register application callback function for handling USB control requests. */
-int usbd_register_control_callback(usbd_device *usbd_dev, uint8_t type,
-				   uint8_t type_mask,
+void usbd_register_control_callback(usbd_device *usbd_dev,
 				   usbd_control_callback callback)
 {
-	int i;
-
-	for (i = 0; i < MAX_USER_CONTROL_CALLBACK; i++) {
-		if (usbd_dev->user_control_callback[i].cb) {
-			continue;
-		}
-
-		usbd_dev->user_control_callback[i].type = type;
-		usbd_dev->user_control_callback[i].type_mask = type_mask;
-		usbd_dev->user_control_callback[i].cb = callback;
-		return 0;
-	}
-
-	return -1;
+	usbd_dev->user_control_callback = callback;
 }
 
 static void usb_control_send_chunk(usbd_device *usbd_dev)
@@ -118,24 +104,15 @@ static int usb_control_recv_chunk(usbd_device *usbd_dev)
 static int usb_control_request_dispatch(usbd_device *usbd_dev,
 					struct usb_setup_data *req)
 {
-	int i, result = 0;
-	struct user_control_callback *cb = usbd_dev->user_control_callback;
-
 	/* Call user command hook function. */
-	for (i = 0; i < MAX_USER_CONTROL_CALLBACK; i++) {
-		if (cb[i].cb == NULL) {
-			break;
-		}
+	if(usbd_dev->user_control_callback) {
+		int result = usbd_dev->user_control_callback(usbd_dev, req,
+			  &(usbd_dev->control_state.ctrl_buf),
+			  &(usbd_dev->control_state.ctrl_len),
+			  &(usbd_dev->control_state.complete));
 
-		if ((req->bmRequestType & cb[i].type_mask) == cb[i].type) {
-			result = cb[i].cb(usbd_dev, req,
-					  &(usbd_dev->control_state.ctrl_buf),
-					  &(usbd_dev->control_state.ctrl_len),
-					  &(usbd_dev->control_state.complete));
-			if (result == USBD_REQ_HANDLED ||
-			    result == USBD_REQ_NOTSUPP) {
-				return result;
-			}
+		if (result != USBD_REQ_NEXT_CALLBACK) {
+			return result;
 		}
 	}
 

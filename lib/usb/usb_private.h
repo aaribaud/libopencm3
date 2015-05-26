@@ -38,7 +38,6 @@ LGPL License Terms @ref lgpl_license
 #ifndef __USB_PRIVATE_H
 #define __USB_PRIVATE_H
 
-#define MAX_USER_CONTROL_CALLBACK	4
 #define MAX_USER_SET_CONFIG_CALLBACK	4
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -76,11 +75,7 @@ struct _usbd_device {
 		usbd_control_complete_callback complete;
 	} control_state;
 
-	struct user_control_callback {
-		usbd_control_callback cb;
-		uint8_t type;
-		uint8_t type_mask;
-	} user_control_callback[MAX_USER_CONTROL_CALLBACK];
+	usbd_control_callback user_control_callback;
 
 	usbd_endpoint_callback user_callback_ctr[8][3];
 

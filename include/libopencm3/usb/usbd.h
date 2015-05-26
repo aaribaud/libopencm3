@@ -90,8 +90,7 @@ typedef void (*usbd_set_altsetting_callback)(usbd_device *usbd_dev,
 typedef void (*usbd_endpoint_callback)(usbd_device *usbd_dev, uint8_t ep);
 
 /* <usb_control.c> */
-extern int usbd_register_control_callback(usbd_device *usbd_dev, uint8_t type,
-					  uint8_t type_mask,
+extern void usbd_register_control_callback(usbd_device *usbd_dev,
 					  usbd_control_callback callback);
 
 /* <usb_standard.c> */
