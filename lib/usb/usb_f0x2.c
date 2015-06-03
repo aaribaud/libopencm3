@@ -67,11 +67,20 @@ static usbd_device *stm32f0x2_usbd_init(void)
  */
 void stm32_usbfs_copy_to_pm(volatile void *vPM, const void *buf, uint16_t len)
 {
-	const uint16_t *lbuf = buf;
 	volatile uint16_t *PM = vPM;
 
-	for (len = (len + 1) >> 1; len; PM++, lbuf++, len--) {
-		*PM = *lbuf;
+	if(((uintptr_t) buf) & 0x01) {
+		const uint8_t *lbuf = buf;
+		for (len >>= 1; len; PM++, lbuf += 2, len--) {
+			*PM = ((*(lbuf + 1)) << 8) | (*lbuf);
+		}
+
+		*(uint8_t *) PM = *(uint8_t *) lbuf;
+	} else {
+		const uint16_t *lbuf = buf;
+		for (len = (len + 1) >> 1; len; PM++, lbuf++, len--) {
+			*PM = *lbuf;
+		}
 	}
 }
 
@@ -84,16 +93,24 @@ void stm32_usbfs_copy_to_pm(volatile void *vPM, const void *buf, uint16_t len)
  */
 void stm32_usbfs_copy_from_pm(void *buf, const volatile void *vPM, uint16_t len)
 {
-	uint16_t *lbuf = buf;
 	const volatile uint16_t *PM = vPM;
 	uint8_t odd = len & 1;
+	len >>= 1;
 
-	for (len >>= 1; len; PM++, lbuf++, len--) {
-		*lbuf = *PM;
+	if(((uintptr_t) buf) & 0x01) {
+		for (; len; PM++, len--) {
+			register uint16_t value = *PM;
+			*(uint8_t *) buf++ = value;
+			*(uint8_t *) buf++ = value >> 8;
+		}
+	} else {
+		for (; len; PM++, buf += 2, len--) {
+			*(uint16_t *) buf = *PM;
+		}
 	}
 
 	if (odd) {
-		*(uint8_t *) lbuf = *(uint8_t *) PM;
+		*(uint8_t *) buf = *(uint8_t *) PM;
 	}
 }
 
