@@ -290,3 +290,12 @@ void stm32_usbfs_poll(usbd_device *dev)
 	done:
 	USB_ISTR = istr;
 }
+
+void stm32_usbfs_register_sof_callback(usbd_device *dev)
+{
+	if (dev->user_callback_sof) {
+		BBIO_PERIPH(USB_CNTR_REG, USB_CNTR_SOFM) = 1;
+	} else {
+		BBIO_PERIPH(USB_CNTR_REG, USB_CNTR_SOFM) = 0;
+	}
+}

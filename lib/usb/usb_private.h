@@ -146,6 +146,7 @@ struct _usbd_driver {
 				   void *buf, uint16_t len);
 	void (*poll)(usbd_device *usbd_dev);
 	void (*disconnect)(usbd_device *usbd_dev, bool disconnected);
+	void (* register_sof_callback)(usbd_device *usbd_dev);
 	uint32_t base_address;
 	bool set_address_before_status;
 	uint16_t rx_fifo_size;

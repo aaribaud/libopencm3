@@ -40,7 +40,8 @@ const struct _usbd_driver stm32f0x2_usb_driver = {
 	.ep_write_packet = stm32_usbfs_ep_write_packet,
 	.ep_read_packet = stm32_usbfs_ep_read_packet,
 	.poll = stm32_usbfs_poll,
-	.disconnect = stm32f0x2_usbd_disconnect
+	.disconnect = stm32f0x2_usbd_disconnect,
+	.register_sof_callback = stm32_usbfs_register_sof_callback
 };
 
 /** Initialize the USB device controller hardware of the STM32. */
@@ -117,7 +118,7 @@ void stm32_usbfs_copy_from_pm(void *buf, const volatile void *vPM, uint16_t len)
 static void stm32f0x2_usbd_disconnect(usbd_device *usbd_dev, bool disconnected)
 {
 	(void) usbd_dev;
-	
+
 	if(disconnected) {
 		USB_CNTR |= USB_CNTR_PWDN;
 		USB_BDCR &= ~USB_BDCR_DPPU;

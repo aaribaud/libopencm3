@@ -336,3 +336,12 @@ void stm32fx07_disconnect(usbd_device *usbd_dev, bool disconnected)
 		REBASE(OTG_DCTL) &= ~OTG_FS_DCTL_SDIS;
 	}
 }
+
+void stm32fx07_register_sof_callback(usbd_device *usbd_dev)
+{
+	if (usbd_dev->user_callback_sof) {
+		BBIO_PERIPH(OTG_FS_GINTMSK, OTG_FS_GINTMSK_SOFM) = 1;
+	} else {
+		BBIO_PERIPH(OTG_FS_GINTMSK, OTG_FS_GINTMSK_SOFM) = 0;
+	}
+}

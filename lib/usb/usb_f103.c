@@ -38,6 +38,7 @@ const struct _usbd_driver stm32f103_usb_driver = {
 	.ep_write_packet = stm32_usbfs_ep_write_packet,
 	.ep_read_packet = stm32_usbfs_ep_read_packet,
 	.poll = stm32_usbfs_poll,
+	.register_sof_callback = stm32_usbfs_register_sof_callback
 };
 
 /** Initialize the USB device controller hardware of the STM32. */

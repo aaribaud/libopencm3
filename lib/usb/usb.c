@@ -113,6 +113,11 @@ void usbd_register_resume_callback(usbd_device *usbd_dev,
 void usbd_register_sof_callback(usbd_device *usbd_dev, void (*callback)(void))
 {
 	usbd_dev->user_callback_sof = callback;
+
+	/* backend enable/disable */
+	if (usbd_dev->driver->register_sof_callback) {
+		usbd_dev->driver->register_sof_callback(usbd_dev);
+	}
 }
 
 void _usbd_reset(usbd_device *usbd_dev)

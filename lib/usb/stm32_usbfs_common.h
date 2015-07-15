@@ -41,6 +41,7 @@ void stm32_usbfs_ep_nak_set(usbd_device *usbd_dev, uint8_t addr, uint8_t nak);
 uint16_t stm32_usbfs_ep_write_packet(usbd_device *usbd_dev, uint8_t addr, const void *buf, uint16_t len);
 uint16_t stm32_usbfs_ep_read_packet(usbd_device *usbd_dev, uint8_t addr, void *buf, uint16_t len);
 void stm32_usbfs_poll(usbd_device *usbd_dev);
+void stm32_usbfs_register_sof_callback(usbd_device *dev);
 
 /* These must be implemented by the device specific driver */
 

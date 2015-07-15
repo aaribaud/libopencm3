@@ -44,6 +44,7 @@ const struct _usbd_driver stm32f207_usb_driver = {
 	.ep_read_packet = stm32fx07_ep_read_packet,
 	.poll = stm32fx07_poll,
 	.disconnect = stm32fx07_disconnect,
+	.register_sof_callback = stm32fx07_register_sof_callback,
 	.base_address = USB_OTG_HS_BASE,
 	.set_address_before_status = 1,
 	.rx_fifo_size = RX_FIFO_SIZE,
