@@ -142,6 +142,7 @@ struct _usbd_driver {
 	void (*set_address)(usbd_device *usbd_dev, uint8_t addr);
 	void (*ep_setup)(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 			 uint16_t max_size, usbd_endpoint_callback cb);
+	void (*ep_type_set)(usbd_device *usbd_dev, uint8_t addr, uint8_t type);
 	void (*ep_reset)(usbd_device *usbd_dev);
 	void (*ep_stall_set)(usbd_device *usbd_dev, uint8_t addr,
 			     uint8_t stall);

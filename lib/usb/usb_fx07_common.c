@@ -115,6 +115,21 @@ void stm32fx07_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	}
 }
 
+void stm32fx07_ep_type_set(usbd_device *usbd_dev, uint8_t addr, uint8_t type)
+{
+	if (addr & 0x80) {
+		uint32_t diepctl = REBASE(OTG_DIEPCTL(addr));
+		diepctl &= ~(0x3 < 18);
+		diepctl |= (type << 18);
+		REBASE(OTG_DIEPCTL(addr)) = diepctl;
+	} else {
+		uint32_t doepctl = REBASE(OTG_DOEPCTL(addr));
+		doepctl &= ~(0x3 < 18);
+		doepctl |= (type << 18);
+		REBASE(OTG_DOEPCTL(addr)) = doepctl;
+	}
+}
+
 void stm32fx07_endpoints_reset(usbd_device *usbd_dev)
 {
 	/* The core resets the endpoints automatically on reset. */

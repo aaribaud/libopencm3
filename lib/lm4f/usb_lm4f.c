@@ -289,6 +289,34 @@ static void lm4f_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	usbd_dev->fifo_mem_top += fifo_size;
 }
 
+static void lm4f_ep_type_set(usbd_device *usbd_dev, uint8_t addr,
+		uint8_t type)
+{
+	(void)usbd_dev;
+
+	const bool dir_tx = addr & 0x80;
+	const uint8_t ep = addr & 0x0f;
+
+	/* ep0 can only be control, and has already been setup'd */
+	if (!ep) {
+		return;
+	}
+
+	if (dir_tx) {
+		if (type == USB_ENDPOINT_ATTR_ISOCHRONOUS) {
+			USB_TXCSRH(ep) |= USB_TXCSRH_ISO;
+		} else {
+			USB_TXCSRH(ep) &= ~USB_TXCSRH_ISO;
+		}
+	} else {
+		if (type == USB_ENDPOINT_ATTR_ISOCHRONOUS) {
+			USB_RXCSRH(ep) |= USB_RXCSRH_ISO;
+		} else {
+			USB_RXCSRH(ep) &= ~USB_RXCSRH_ISO;
+		}
+	}
+}
+
 static void lm4f_endpoints_reset(usbd_device *usbd_dev)
 {
 	/*
@@ -630,6 +658,7 @@ const struct _usbd_driver lm4f_usb_driver = {
 	.init = lm4f_usbd_init,
 	.set_address = lm4f_set_address,
 	.ep_setup = lm4f_ep_setup,
+	.ep_type_set = lm4f_ep_type_set,
 	.ep_reset = lm4f_endpoints_reset,
 	.ep_stall_set = lm4f_ep_stall_set,
 	.ep_stall_get = lm4f_ep_stall_get,

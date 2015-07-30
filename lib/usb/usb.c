@@ -148,6 +148,13 @@ void usbd_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	usbd_dev->driver->ep_setup(usbd_dev, addr, type, max_size, callback);
 }
 
+void usbd_ep_type_set(usbd_device *usbd_dev, uint8_t addr, uint8_t type)
+{
+	if(usbd_dev->driver->ep_type_set) {
+		usbd_dev->driver->ep_type_set(usbd_dev, addr, type);
+	}
+}
+
 uint16_t usbd_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 			 const void *buf, uint16_t len)
 {

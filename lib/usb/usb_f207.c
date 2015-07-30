@@ -36,6 +36,7 @@ const struct _usbd_driver stm32f207_usb_driver = {
 	.init = stm32f207_usbd_init,
 	.set_address = stm32fx07_set_address,
 	.ep_setup = stm32fx07_ep_setup,
+	.ep_type_set = stm32fx07_ep_type_set,
 	.ep_reset = stm32fx07_endpoints_reset,
 	.ep_stall_set = stm32fx07_ep_stall_set,
 	.ep_stall_get = stm32fx07_ep_stall_get,
