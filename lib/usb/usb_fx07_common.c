@@ -115,6 +115,49 @@ void stm32fx07_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	}
 }
 
+
+void stm32fx07_ep_size_set(usbd_device *usbd_dev, uint8_t addr,
+			uint16_t max_size)
+{
+	/*
+	 * Configure endpoint address and type. Allocate FIFO memory for
+	 * endpoint. Install callback funciton.
+	 */
+	uint8_t dir = addr & 0x80;
+	addr &= 0x7f;
+
+	if (dir) {
+		/* only update INEPTXFD */
+		uint32_t dieptxf = REBASE(OTG_DIEPTXF(addr));
+		dieptxf &= 0x0000FFFF;
+		dieptxf |= ((max_size / 4) << 16);
+		REBASE(OTG_DIEPTXF(addr)) = dieptxf;
+
+		/* update XFRSIZ */
+		REBASE(OTG_DIEPTSIZ(addr)) =
+		    (max_size & OTG_FS_DIEPSIZ0_XFRSIZ_MASK);
+
+		/* only update MPSIZ */
+		uint32_t diepctl = REBASE(OTG_DIEPCTL(addr));
+		diepctl &= ~0x3FF;
+		diepctl |= max_size;
+		REBASE(OTG_DIEPCTL(addr)) = diepctl;
+	} else {
+		/* update XFRSIZ */
+		uint32_t doeptsiz = usbd_dev->doeptsiz[addr];
+		doeptsiz &= OTG_FS_DIEPSIZ0_XFRSIZ_MASK;
+		doeptsiz |= (max_size & OTG_FS_DIEPSIZ0_XFRSIZ_MASK);
+		usbd_dev->doeptsiz[addr] = doeptsiz;
+		REBASE(OTG_DOEPTSIZ(addr)) = doeptsiz;
+
+		/* update MPSIZ */
+		uint32_t doepctl = REBASE(OTG_DOEPCTL(addr));
+		doepctl &= ~0x3FF;
+		doepctl |= max_size;
+		REBASE(OTG_DOEPCTL(addr)) = doepctl;
+	}
+}
+
 void stm32fx07_endpoints_reset(usbd_device *usbd_dev)
 {
 	/* The core resets the endpoints automatically on reset. */

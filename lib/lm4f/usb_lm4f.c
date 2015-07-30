@@ -289,6 +289,61 @@ static void lm4f_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	usbd_dev->fifo_mem_top += fifo_size;
 }
 
+
+static void lm4f_ep_size_set(usbd_device *usbd_dev, uint8_t addr,
+			  uint16_t max_size)
+{
+	(void)usbd_dev;
+
+	uint8_t reg8;
+
+	const bool dir_tx = addr & 0x80;
+	const uint8_t ep = addr & 0x0f;
+
+	/* size of ep0 cannot be modified once it has been setup'd */
+	if (!ep) {
+		return;
+	}
+
+	/* requesting larger memory than assigned in setup? */
+	if (max_size > (dir_tx ? USB_TXMAXP(ep) : USB_RXMAXP(ep))) {
+		return;
+	}
+
+	/*
+	 * We do not mess with the maximum packet size, but we can only allocate
+	 * the FIFO in power-of-two increments.
+	 */
+	if (max_size > 1024) {
+		reg8 = USB_FIFOSZ_SIZE_2048;
+	} else if (max_size > 512) {
+		reg8 = USB_FIFOSZ_SIZE_1024;
+	} else if (max_size > 256) {
+		reg8 = USB_FIFOSZ_SIZE_512;
+	} else if (max_size > 128) {
+		reg8 = USB_FIFOSZ_SIZE_256;
+	} else if (max_size > 64) {
+		reg8 = USB_FIFOSZ_SIZE_128;
+	} else if (max_size > 32) {
+		reg8 = USB_FIFOSZ_SIZE_64;
+	} else if (max_size > 16) {
+		reg8 = USB_FIFOSZ_SIZE_32;
+	} else if (max_size > 8) {
+		reg8 = USB_FIFOSZ_SIZE_16;
+	} else {
+		reg8 = USB_FIFOSZ_SIZE_8;
+	}
+
+	USB_EPIDX = addr & USB_EPIDX_MASK;
+
+	/* FIXME: What about double buffering? */
+	if (dir_tx) {
+		USB_TXFIFOSZ = reg8;
+	} else {
+		USB_RXFIFOSZ = reg8;
+	}
+}
+
 static void lm4f_endpoints_reset(usbd_device *usbd_dev)
 {
 	/*
@@ -630,6 +685,7 @@ const struct _usbd_driver lm4f_usb_driver = {
 	.init = lm4f_usbd_init,
 	.set_address = lm4f_set_address,
 	.ep_setup = lm4f_ep_setup,
+	.ep_size_set = lm4f_ep_size_set,
 	.ep_reset = lm4f_endpoints_reset,
 	.ep_stall_set = lm4f_ep_stall_set,
 	.ep_stall_get = lm4f_ep_stall_get,

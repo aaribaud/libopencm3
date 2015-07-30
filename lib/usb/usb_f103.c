@@ -30,6 +30,8 @@ static void stm32f103_ep_setup(usbd_device *usbd_dev, uint8_t addr,
 			       uint8_t type, uint16_t max_size,
 			       void (*callback) (usbd_device *usbd_dev,
 						 uint8_t ep));
+static void stm32f103_ep_size_set(usbd_device *dev, uint8_t addr,
+			       uint16_t max_size);
 static void stm32f103_endpoints_reset(usbd_device *usbd_dev);
 static void stm32f103_ep_stall_set(usbd_device *usbd_dev, uint8_t addr,
 				   uint8_t stall);
@@ -49,6 +51,7 @@ const struct _usbd_driver stm32f103_usb_driver = {
 	.init = stm32f103_usbd_init,
 	.set_address = stm32f103_set_address,
 	.ep_setup = stm32f103_ep_setup,
+	.ep_size_set = stm32f103_ep_size_set,
 	.ep_reset = stm32f103_endpoints_reset,
 	.ep_stall_set = stm32f103_ep_stall_set,
 	.ep_stall_get = stm32f103_ep_stall_get,
@@ -120,6 +123,11 @@ static void stm32f103_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 	USB_SET_EP_ADDR(addr, addr);
 	USB_SET_EP_TYPE(addr, typelookup[type]);
 
+	/* note: for TX, their is no method to store max_size.
+	 *   it is assumed that application will never send buffer
+	 *    larger than max_size of TX.
+	 *   so, usb_f103 do not have any internal checking for buffer write */
+
 	if (dir || (addr == 0)) {
 		USB_SET_EP_TX_ADDR(addr, dev->pm_top);
 		if (callback) {
@@ -141,6 +149,22 @@ static void stm32f103_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 		USB_CLR_EP_RX_DTOG(addr);
 		USB_SET_EP_RX_STAT(addr, USB_EP_RX_STAT_VALID);
 		dev->pm_top += max_size;
+	}
+}
+
+static void stm32f103_ep_size_set(usbd_device *dev, uint8_t addr,
+			       uint16_t max_size)
+{
+	uint8_t dir = addr & 0x80;
+	addr &= 0x7f;
+
+	/* note: for TX, their is no method to store max_size.
+	 *   it is assumed that application will never send buffer
+	 *    larger than max_size of TX.
+	 *   so, usb_f103 do not have any internal checking for buffer write */
+
+	if (!dir) {
+		usb_set_ep_rx_bufsize(dev, addr, max_size);
 	}
 }
 

@@ -108,6 +108,9 @@ extern void usbd_disconnect(usbd_device *usbd_dev, bool disconnected);
 extern void usbd_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 		uint16_t max_size, usbd_endpoint_callback callback);
 
+extern void usbd_ep_size_set(usbd_device *usbd_dev, uint8_t addr,
+		uint16_t max_size);
+
 extern uint16_t usbd_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 				const void *buf, uint16_t len);
 

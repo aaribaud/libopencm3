@@ -148,6 +148,22 @@ void usbd_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	usbd_dev->driver->ep_setup(usbd_dev, addr, type, max_size, callback);
 }
 
+/**
+ * reconfigure size of endpoint after endpoint has be setup'd.
+ * @param usbd_dev usb device
+ * @param addr endpoint number + direction
+ * @param max_size the new size to be configured.
+ * @note max_size should not be greater than what was passed at the time of setup.
+ * @see usbd_ep_setup()
+ */
+void usbd_ep_size_set(usbd_device *usbd_dev, uint8_t addr,
+		   uint16_t max_size)
+{
+	if (usbd_dev->driver->ep_size_set) {
+		usbd_dev->driver->ep_size_set(usbd_dev, addr, max_size);
+	}
+}
+
 uint16_t usbd_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 			 const void *buf, uint16_t len)
 {
