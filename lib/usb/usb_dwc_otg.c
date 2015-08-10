@@ -20,11 +20,9 @@
 #include <string.h>
 #include <libopencm3/cm3/common.h>
 #include <libopencm3/stm32/tools.h>
-#include <libopencm3/stm32/otg_fs.h>
-#include <libopencm3/stm32/otg_hs.h>
+#include <libopencm3/usb/periph/dwc_otg.h>
 #include <libopencm3/usb/usbd.h>
 #include "usb_private.h"
-#include "usb_fx07_common.h"
 
 /* The FS core and the HS core have the same register layout.
  * As the code can be used on both cores, the registers offset is modified
@@ -33,12 +31,12 @@
 #define REBASE(x)        MMIO32((x) + (dev_base_address))
 #define REBASE_FIFO(x)   (&MMIO32((dev_base_address) + (OTG_FIFO(x))))
 
-void stm32fx07_set_address(usbd_device *usbd_dev, uint8_t addr)
+void dwc_otg_set_address(usbd_device *usbd_dev, uint8_t addr)
 {
 	REBASE(OTG_DCFG) = (REBASE(OTG_DCFG) & ~OTG_DCFG_DAD) | (addr << 4);
 }
 
-void stm32fx07_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
+void dwc_otg_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 			uint16_t max_size,
 			void (*callback) (usbd_device *usbd_dev, uint8_t ep))
 {
@@ -115,13 +113,13 @@ void stm32fx07_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
 	}
 }
 
-void stm32fx07_endpoints_reset(usbd_device *usbd_dev)
+void dwc_otg_endpoints_reset(usbd_device *usbd_dev)
 {
 	/* The core resets the endpoints automatically on reset. */
 	usbd_dev->fifo_mem_top = usbd_dev->fifo_mem_top_ep0;
 }
 
-void stm32fx07_ep_stall_set(usbd_device *usbd_dev, uint8_t addr, uint8_t stall)
+void dwc_otg_ep_stall_set(usbd_device *usbd_dev, uint8_t addr, uint8_t stall)
 {
 	if (addr == 0) {
 		if (stall) {
@@ -150,7 +148,7 @@ void stm32fx07_ep_stall_set(usbd_device *usbd_dev, uint8_t addr, uint8_t stall)
 	}
 }
 
-uint8_t stm32fx07_ep_stall_get(usbd_device *usbd_dev, uint8_t addr)
+uint8_t dwc_otg_ep_stall_get(usbd_device *usbd_dev, uint8_t addr)
 {
 	/* Return non-zero if STALL set. */
 	if (addr & 0x80) {
@@ -162,7 +160,7 @@ uint8_t stm32fx07_ep_stall_get(usbd_device *usbd_dev, uint8_t addr)
 	}
 }
 
-void stm32fx07_ep_nak_set(usbd_device *usbd_dev, uint8_t addr, uint8_t nak)
+void dwc_otg_ep_nak_set(usbd_device *usbd_dev, uint8_t addr, uint8_t nak)
 {
 	/* It does not make sence to force NAK on IN endpoints. */
 	if (addr & 0x80) {
@@ -178,7 +176,7 @@ void stm32fx07_ep_nak_set(usbd_device *usbd_dev, uint8_t addr, uint8_t nak)
 	}
 }
 
-uint16_t stm32fx07_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
+uint16_t dwc_otg_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 			      const void *buf, uint16_t len)
 {
 	const uint32_t *buf32 = buf;
@@ -205,7 +203,7 @@ uint16_t stm32fx07_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 	return len;
 }
 
-uint16_t stm32fx07_ep_read_packet(usbd_device *usbd_dev, uint8_t addr,
+uint16_t dwc_otg_ep_read_packet(usbd_device *usbd_dev, uint8_t addr,
 				  void *buf, uint16_t len)
 {
 	int i;
@@ -233,7 +231,7 @@ uint16_t stm32fx07_ep_read_packet(usbd_device *usbd_dev, uint8_t addr,
 	return len;
 }
 
-void stm32fx07_poll(usbd_device *usbd_dev)
+void dwc_otg_poll(usbd_device *usbd_dev)
 {
 	/* Read interrupt status register. */
 	uint32_t intsts = REBASE(OTG_GINTSTS);
@@ -334,7 +332,7 @@ void stm32fx07_poll(usbd_device *usbd_dev)
 	}
 }
 
-void stm32fx07_disconnect(usbd_device *usbd_dev, bool disconnected)
+void dwc_otg_disconnect(usbd_device *usbd_dev, bool disconnected)
 {
 	if (disconnected) {
 		REBASE(OTG_DCTL) |= OTG_DCTL_SDIS;

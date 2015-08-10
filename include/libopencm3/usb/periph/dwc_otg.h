@@ -2,7 +2,7 @@
  * This file is part of the libopencm3 project.
  *
  * Copyright (C) 2010 Gareth McMullin <gareth@blacksphere.co.nz>
- * 
+ *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,19 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 /*
  * This file is intended to be included by either otg_hs.h or otg_fs.h
- * Contains common definitions of Command and Status Registers (CSR) and their 
- * bit definitions. 
- * 
- */ 
+ * Contains common definitions of Command and Status Registers (CSR) and their
+ * bit definitions.
+ *
+ */
 
-#ifndef LIBOPENCM3_OTG_COMMON_H
-#define LIBOPENCM3_OTG_COMMON_H
+#ifndef LIBOPENCM3_USB_DWC_OTG_H
+#define LIBOPENCM3_USB_DWC_OTG_H
 
+#include <libopencm3/cm3/common.h>
+#include <libopencm3/usb/usbd.h>
 
- 
 /* Core Global Control and Status Registers */
 #define OTG_GOTGCTL			0x000
 #define OTG_GOTGINT			0x004
@@ -484,6 +485,23 @@
 #define OTG_HCTSIZ_PKTCNT_MASK	(0x3ff << 19)
 #define OTG_HCTSIZ_XFRSIZ_MASK	(0x7ffff << 0)
 
+BEGIN_DECLS
 
+void dwc_otg_set_address(usbd_device *usbd_dev, uint8_t addr);
+void dwc_otg_ep_setup(usbd_device *usbd_dev, uint8_t addr, uint8_t type,
+			uint16_t max_size,
+			void (*callback)(usbd_device *usbd_dev, uint8_t ep));
+void dwc_otg_endpoints_reset(usbd_device *usbd_dev);
+void dwc_otg_ep_stall_set(usbd_device *usbd_dev, uint8_t addr, uint8_t stall);
+uint8_t dwc_otg_ep_stall_get(usbd_device *usbd_dev, uint8_t addr);
+void dwc_otg_ep_nak_set(usbd_device *usbd_dev, uint8_t addr, uint8_t nak);
+uint16_t dwc_otg_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
+				   const void *buf, uint16_t len);
+uint16_t dwc_otg_ep_read_packet(usbd_device *usbd_dev, uint8_t addr,
+				  void *buf, uint16_t len);
+void dwc_otg_poll(usbd_device *usbd_dev);
+void dwc_otg_disconnect(usbd_device *usbd_dev, bool disconnected);
+
+END_DECLS
 
 #endif
