@@ -1,7 +1,23 @@
-/* This provides unification of code over STM32F subfamilies */
+/** @defgroup usb_hid_defines USB HID Type Definitions
+
+@brief <b>Defined Constants and Types for the USB HID Type Definitions</b>
+
+@ingroup USB_defines
+
+@version 1.0.0
+
+@author @htmlonly &copy; @endhtmlonly 2010
+Gareth McMullin <gareth@blacksphere.co.nz>
+
+@date 10 March 2013
+
+LGPL License Terms @ref lgpl_license
+*/
 
 /*
  * This file is part of the libopencm3 project.
+ *
+ * Copyright (C) 2010 Gareth McMullin <gareth@blacksphere.co.nz>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,18 +33,27 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libopencm3/stm32/memorymap.h>
+/**@{*/
 
-#if defined(STM32F0)
-#       include <libopencm3/stm32/f0/usb.h>
-#elif defined(STM32F1)
-#       include <libopencm3/stm32/f1/usb.h>
-#elif defined(STM32F3)
-#       include <libopencm3/stm32/f3/usb.h>
-#elif defined(STM32L0)
-#       include <libopencm3/stm32/l0/usb.h>
-#elif defined(STM32L1)
-#       include <libopencm3/stm32/l1/usb.h>
-#else
-#       error "stm32 family not defined."
+#ifndef LIBOPENCM3_USB_HID_H
+#define LIBOPENCM3_USB_HID_H
+
+#include <stdint.h>
+
+#define USB_CLASS_HID	3
+
+#define USB_DT_HID	0x21
+#define USB_DT_REPORT	0x22
+
+struct usb_hid_descriptor {
+	uint8_t bLength;
+	uint8_t bDescriptorType;
+	uint16_t bcdHID;
+	uint8_t bCountryCode;
+	uint8_t bNumDescriptors;
+} __attribute__((packed));
+
 #endif
+
+/**@}*/
+

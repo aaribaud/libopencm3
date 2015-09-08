@@ -37,8 +37,8 @@ LGPL License Terms @ref lgpl_license
 
 /**@{*/
 
-#ifndef __MSC_H
-#define __MSC_H
+#ifndef LIBOPENCM3_USB_MSC_H
+#define LIBOPENCM3_USB_MSC_H
 
 typedef struct _usbd_mass_storage usbd_mass_storage;
 
@@ -87,6 +87,13 @@ usbd_mass_storage *usb_msc_init(usbd_device *usbd_dev,
 				 const uint32_t block_count,
 				 int (*read_block)(uint32_t lba, uint8_t *copy_to),
 				 int (*write_block)(uint32_t lba, const uint8_t *copy_from));
+
+enum usbd_control_result
+usb_msc_control(usbd_device *usbd_dev,
+				usbd_control_arg *arg);
+
+void usb_msc_set_config(usbd_device *usbd_dev,
+				const struct usb_config_descriptor *cfg);
 
 #endif
 

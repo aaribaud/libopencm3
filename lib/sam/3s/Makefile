@@ -33,7 +33,7 @@ CFLAGS          += $(DEBUG_FLAGS)
 ARFLAGS		= rcs
 OBJS		= gpio_common_all.o gpio_common_3n3s.o pmc.o usart.o
 
-VPATH += ../../usb:../../cm3:../common
+VPATH += ../../cm3:../common
 
 include ../../Makefile.include
 

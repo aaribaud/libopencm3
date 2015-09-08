@@ -36,9 +36,14 @@ CFLAGS		= -Os \
 CFLAGS          += $(DEBUG_FLAGS)
 # ARFLAGS	= rcsv
 ARFLAGS		= rcs
-OBJS		= gpio.o vector.o assert.o systemcontrol.o rcc.o uart.o \
-		  usb_lm4f.o usb.o usb_control.o usb_standard.o
+OBJS		= gpio.o vector.o assert.o systemcontrol.o rcc.o uart.o
 
-VPATH += ../usb:../cm3
+OBJS += usb.o usb_control.o usb_standard.o
+OBJS += usb_class_msc.o
+OBJS += usb_misc_string.o usb_misc_control.o
+OBJS += usb_driver_lm4f.o
+
+VPATH += ../usb:../usb/driver:../usb/class:../usb/misc
+VPATH += ../cm3
 
 include ../Makefile.include

@@ -1,7 +1,7 @@
-/* This provides unification of code over STM32F subfamilies */
-
 /*
  * This file is part of the libopencm3 project.
+ *
+ * Copyright (C) 2015 Kuldeep Singh Dhaka <kuldeepdhaka9@gmail.com>
  *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,18 +17,29 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libopencm3/stm32/memorymap.h>
+#include <libopencm3/usb/misc/control.h>
 
-#if defined(STM32F0)
-#       include <libopencm3/stm32/f0/usb.h>
-#elif defined(STM32F1)
-#       include <libopencm3/stm32/f1/usb.h>
-#elif defined(STM32F3)
-#       include <libopencm3/stm32/f3/usb.h>
-#elif defined(STM32L0)
-#       include <libopencm3/stm32/l0/usb.h>
-#elif defined(STM32L1)
-#       include <libopencm3/stm32/l1/usb.h>
-#else
-#       error "stm32 family not defined."
-#endif
+enum usbd_control_result
+usbd_control_route(usbd_device *dev, usbd_control_arg *arg,
+			const struct usbd_control_handler *handlers)
+{
+	for (;;) {
+		/* EOF list? */
+		if (handlers->callback == NULL) {
+			break;
+		}
+
+		/* Continue until some handler handle the request  */
+		if ((arg->setup.bmRequestType & handlers->type_mask) == handlers->type_value) {
+			enum usbd_control_result result = handlers->callback(dev, arg);
+			if (result != USBD_REQ_NEXT) {
+				return result;
+			}
+		}
+
+		handlers++;
+	}
+
+	/* No handler found */
+	return USBD_REQ_NEXT;
+}

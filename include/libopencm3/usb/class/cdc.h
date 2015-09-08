@@ -35,8 +35,8 @@ LGPL License Terms @ref lgpl_license
 
 /**@{*/
 
-#ifndef __CDC_H
-#define __CDC_H
+#ifndef LIBOPENCM3_USB_CDC_H
+#define LIBOPENCM3_USB_CDC_H
 
 /* Definitions of Communications Device Class from
  * "Universal Serial Bus Class Definitions for Communications Devices

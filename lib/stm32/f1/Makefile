@@ -46,10 +46,14 @@ OBJS            += crc_common_all.o dac_common_all.o dma_common_l1f013.o \
                    rcc_common_all.o exti_common_all.o \
                    flash_common_f01.o
 
-OBJS            += usb.o usb_control.o usb_standard.o usb_f103.o usb_f107.o \
-                   usb_fx07_common.o usb_msc.o
+OBJS += usb.o usb_control.o usb_standard.o
+OBJS += usb_class_msc.o
+OBJS += usb_misc_string.o usb_misc_control.o
+OBJS += usb_driver_stm32f103.o usb_driver_stm32_fsdev.o
+OBJS += usb_driver_stm32f107.o usb_driver_dwc_otg.o
 
-VPATH += ../../usb:../:../../cm3:../common:../../ethernet
+VPATH += ../:../../cm3:../common:../../ethernet
+VPATH += ../../usb:../../usb/driver:../../usb/class:../../usb/misc
 
 include ../../Makefile.include
 

@@ -44,8 +44,12 @@ OBJS            += gpio_common_all.o gpio_common_f0234.o \
 		   timer_common_all.o timer_common_f234.o flash_common_f234.o \
 		   flash.o exti_common_all.o rcc_common_all.o spi_common_f03.o
 
-OBJS		+= usb.o usb_control.o usb_standard.o usb_f103.o
+OBJS		+= usb.o usb_control.o usb_standard.o
+OBJS		+= usb_class_msc.o
+OBJS		+= usb_misc_string.o usb_misc_control.o
+OBJS		+= usb_driver_stm32f103.o usb_driver_stm32_fsdev.o
 
-VPATH += ../../usb:../:../../cm3:../common
+VPATH += ../:../../cm3:../common
+VPATH += ../../usb:../../usb/driver:../../usb/class:../../usb/misc
 
 include ../../Makefile.include

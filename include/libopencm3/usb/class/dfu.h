@@ -35,8 +35,8 @@ LGPL License Terms @ref lgpl_license
 
 /**@{*/
 
-#ifndef __DFU_H
-#define __DFU_H
+#ifndef LIBOPENCM3_USB_DFU_H
+#define LIBOPENCM3_USB_DFU_H
 
 enum dfu_req {
 	DFU_DETACH,

@@ -44,10 +44,14 @@ OBJS		+= spi_common_all.o spi_common_l1f124.o timer_common_all.o
 OBJS		+= usart_common_all.o usart_common_f124.o
 OBJS		+= exti_common_all.o
 OBJS		+= rcc_common_all.o
-OBJS		+= usb.o usb_control.o usb_standard.o usb_f103.o
+OBJS		+= usb.o usb_control.o usb_standard.o
+OBJS		+= usb_class_msc.o
+OBJS		+= usb_misc_string.o usb_misc_control.o
+OBJS		+= usb_driver_stm32f103.o usb_driver_stm32_fsdev.o
 OBJS		+= adc.o adc_common_v1.o
 
-VPATH += ../../usb:../:../../cm3:../common
+VPATH += ../:../../cm3:../common
+VPATH += ../../usb:../../usb/driver:../../usb/class:../../usb/misc
 
 include ../../Makefile.include
 
